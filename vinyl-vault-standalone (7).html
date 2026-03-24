@@ -1,0 +1,1505 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VINYL VAULT — Ma Collection</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{--bg:#0a0a0a;--bg2:#111111;--bg3:#1a1a1a;--surface:#161616;--border:#2a2a2a;--accent:#e8c547;--accent2:#c94b4b;--wish:#7b6fe0;--wish-dim:rgba(123,111,224,0.08);--text:#f0ece0;--text-muted:#7a7668;--text-dim:#3a3830;--groove:rgba(232,197,71,0.06);--record:#1c1c1c;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden;}
+  body::before{content:'';position:fixed;inset:0;background:repeating-radial-gradient(circle at 50% 50%,transparent 0px,transparent 18px,rgba(232,197,71,0.015) 19px,transparent 20px),repeating-radial-gradient(circle at 50% 50%,transparent 0px,transparent 38px,rgba(232,197,71,0.01) 39px,transparent 40px);pointer-events:none;z-index:0;}
+  header{position:sticky;top:0;z-index:100;background:rgba(10,10,10,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:64px;}
+  .logo{font-family:'Bebas Neue',sans-serif;font-size:2rem;letter-spacing:0.15em;color:var(--accent);display:flex;align-items:center;gap:0.5rem;}
+  .logo-disc{width:28px;height:28px;border-radius:50%;background:conic-gradient(#1a1a1a 0deg,#2a2a2a 45deg,#1a1a1a 90deg,#2a2a2a 135deg,#1a1a1a 180deg,#2a2a2a 225deg,#1a1a1a 270deg,#2a2a2a 315deg,#1a1a1a 360deg);border:2px solid var(--accent);box-shadow:0 0 12px rgba(232,197,71,0.3);animation:spin 4s linear infinite;flex-shrink:0;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .nav-tabs{display:flex;gap:0;}
+  .nav-tab{background:none;border:none;color:var(--text-muted);font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.12em;text-transform:uppercase;padding:0.5rem 1.1rem;cursor:pointer;transition:all 0.2s;border-bottom:2px solid transparent;position:relative;top:1px;}
+  .nav-tab:hover{color:var(--text);}
+  .nav-tab.active{color:var(--accent);border-bottom-color:var(--accent);}
+  .nav-tab.wish-tab.active{color:var(--wish);border-bottom-color:var(--wish);}
+  .app{position:relative;z-index:1;}
+  .page{display:none;padding:2rem;max-width:1400px;margin:0 auto;}
+  .page.active{display:block;}
+  .page-title{font-family:'Bebas Neue',sans-serif;font-size:3.5rem;letter-spacing:0.05em;line-height:1;color:var(--text);}
+  .page-title span{color:var(--accent);}
+  .page-title span.wish{color:var(--wish);}
+  .collection-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:2rem;gap:1rem;flex-wrap:wrap;}
+  .collection-stats{display:flex;gap:2rem;align-items:flex-end;}
+  .stat{text-align:right;}
+  .stat-value{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--accent);line-height:1;}
+  .stat-value.wish{color:var(--wish);}
+  .stat-label{font-size:0.65rem;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;}
+  .search-row{display:flex;gap:0.75rem;margin-bottom:1.5rem;align-items:center;flex-wrap:wrap;}
+  .search-box{flex:1;min-width:200px;background:var(--surface);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:0.85rem;padding:0.7rem 1rem;outline:none;transition:border-color 0.2s;}
+  .search-box:focus{border-color:var(--accent);}
+  .search-box::placeholder{color:var(--text-dim);}
+  .btn{background:none;border:1px solid var(--border);color:var(--text-muted);font-family:'DM Mono',monospace;font-size:0.75rem;letter-spacing:0.1em;text-transform:uppercase;padding:0.7rem 1.2rem;cursor:pointer;transition:all 0.2s;white-space:nowrap;}
+  .btn:hover{border-color:var(--text-muted);color:var(--text);}
+  .btn-primary{background:var(--accent);border-color:var(--accent);color:#000;font-weight:500;}
+  .btn-primary:hover{background:#f5d45a;border-color:#f5d45a;color:#000;}
+  .btn-wish{background:var(--wish);border-color:var(--wish);color:#fff;font-weight:500;}
+  .btn-wish:hover{background:#9488e8;border-color:#9488e8;color:#fff;}
+  .btn-danger{border-color:var(--accent2);color:var(--accent2);}
+  .btn-danger:hover{background:var(--accent2);color:#fff;}
+  .filter-row{display:flex;gap:0.5rem;margin-bottom:1.5rem;flex-wrap:wrap;}
+  .filter-chip{background:none;border:1px solid var(--border);color:var(--text-muted);font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.08em;text-transform:uppercase;padding:0.4rem 0.8rem;cursor:pointer;transition:all 0.2s;}
+  .filter-chip:hover,.filter-chip.active{border-color:var(--accent);color:var(--accent);background:var(--groove);}
+  .filter-chip.wish-chip:hover,.filter-chip.wish-chip.active{border-color:var(--wish);color:var(--wish);background:var(--wish-dim);}
+  .vinyl-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1.5rem;}
+  .vinyl-card{background:var(--surface);border:1px solid var(--border);cursor:pointer;transition:all 0.25s;position:relative;overflow:hidden;animation:fadeUp 0.4s ease both;}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+  .vinyl-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 32px rgba(232,197,71,0.12);}
+  .vinyl-card.wish-card:hover{border-color:var(--wish);box-shadow:0 8px 32px rgba(123,111,224,0.15);}
+  .vinyl-cover{width:100%;aspect-ratio:1;background:var(--record);position:relative;overflow:hidden;}
+  .vinyl-cover img{width:100%;height:100%;object-fit:cover;display:block;}
+  .vinyl-cover-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:var(--record);}
+  .record-svg{width:70%;height:70%;}
+  .vinyl-info{padding:0.9rem;border-top:1px solid var(--border);}
+  .vinyl-artist{font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:0.3rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .vinyl-artist.wish{color:var(--wish);}
+  .vinyl-title{font-family:'Playfair Display',serif;font-size:0.95rem;color:var(--text);margin-bottom:0.5rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .vinyl-meta{display:flex;justify-content:space-between;align-items:center;}
+  .vinyl-year{font-size:0.65rem;color:var(--text-muted);font-style:italic;}
+  .vinyl-price{font-size:0.75rem;color:var(--accent);font-weight:500;}
+  .vinyl-price.wish{color:var(--wish);}
+  .vinyl-grade{position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.85);border:1px solid var(--border);color:var(--accent);font-size:0.6rem;padding:0.2rem 0.4rem;letter-spacing:0.05em;}
+  .wish-badge{position:absolute;top:8px;left:8px;background:var(--wish);color:#fff;font-size:0.58rem;padding:0.2rem 0.45rem;letter-spacing:0.06em;text-transform:uppercase;}
+  .priority-badge{position:absolute;top:8px;right:8px;font-size:0.85rem;line-height:1;}
+  .empty-state{text-align:center;padding:5rem 2rem;color:var(--text-muted);grid-column:1/-1;}
+  .empty-state svg{opacity:0.2;margin-bottom:1rem;display:block;margin-left:auto;margin-right:auto;}
+  .empty-state p{font-size:0.85rem;letter-spacing:0.05em;}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);backdrop-filter:blur(8px);z-index:1000;display:none;align-items:center;justify-content:center;padding:1rem;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--bg2);border:1px solid var(--border);width:100%;max-width:700px;max-height:90vh;overflow-y:auto;animation:modalIn 0.25s ease;}
+  @keyframes modalIn{from{opacity:0;transform:scale(0.96) translateY(12px);}to{opacity:1;transform:none;}}
+  .modal-header{display:flex;justify-content:space-between;align-items:center;padding:1.5rem 1.5rem 1rem;border-bottom:1px solid var(--border);margin-bottom:1.5rem;}
+  .modal-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.08em;color:var(--accent);}
+  .modal-title.wish{color:var(--wish);}
+  .modal-close{background:none;border:1px solid var(--border);color:var(--text-muted);width:32px;height:32px;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+  .modal-close:hover{border-color:var(--accent2);color:var(--accent2);}
+  .modal-body{padding:0 1.5rem 1.5rem;}
+  .detail-layout{display:grid;grid-template-columns:200px 1fr;gap:2rem;margin-bottom:1.5rem;}
+  .detail-cover{aspect-ratio:1;background:var(--record);overflow:hidden;border:1px solid var(--border);}
+  .detail-cover img{width:100%;height:100%;object-fit:cover;}
+  .detail-info{display:flex;flex-direction:column;gap:0.6rem;}
+  .detail-artist{font-size:0.7rem;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent);}
+  .detail-artist.wish{color:var(--wish);}
+  .detail-title{font-family:'Playfair Display',serif;font-size:1.6rem;line-height:1.2;}
+  .detail-row{display:flex;gap:1rem;flex-wrap:wrap;}
+  .detail-field{flex:1;min-width:100px;}
+  .detail-field-label{font-size:0.6rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.2rem;}
+  .detail-field-value{font-size:0.85rem;color:var(--text);}
+  .price-highlight{color:var(--accent);font-size:1.2rem;font-weight:500;}
+  .price-range{font-size:0.75rem;color:var(--text-muted);margin-top:0.2rem;}
+  .tracklist{margin-top:1rem;}
+  .tracklist-title{font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.75rem;border-bottom:1px solid var(--border);padding-bottom:0.5rem;}
+  .track{display:flex;justify-content:space-between;padding:0.4rem 0;border-bottom:1px solid rgba(42,42,42,0.5);font-size:0.8rem;}
+  .track-pos{color:var(--accent);width:30px;flex-shrink:0;}
+  .track-title{flex:1;}
+  .track-duration{color:var(--text-muted);}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+  .form-group{display:flex;flex-direction:column;gap:0.4rem;}
+  .form-group.full{grid-column:1/-1;}
+  .form-label{font-size:0.65rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);}
+  .form-input{background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:0.85rem;padding:0.65rem 0.9rem;outline:none;transition:border-color 0.2s;width:100%;}
+  .form-input:focus{border-color:var(--accent);}
+  select.form-input{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a7668' fill='none' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:2rem;}
+  .form-actions{display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border);}
+  .discogs-results{max-height:400px;overflow-y:auto;margin-top:1rem;border:1px solid var(--border);}
+  .discogs-result-item{display:flex;gap:1rem;padding:0.9rem 1rem;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;align-items:center;}
+  .discogs-result-item:hover{background:var(--groove);}
+  .discogs-result-item:last-child{border-bottom:none;}
+  .discogs-thumb{width:50px;height:50px;object-fit:cover;background:var(--record);flex-shrink:0;border:1px solid var(--border);}
+  .discogs-result-info{flex:1;min-width:0;}
+  .discogs-result-title{font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .discogs-result-sub{font-size:0.7rem;color:var(--text-muted);margin-top:0.2rem;}
+  /* WISHLIST */
+  .wish-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
+  .wish-stat-card{background:var(--surface);border:1px solid var(--border);border-top:2px solid var(--wish);padding:1.2rem;}
+  .wish-stat-value{font-family:'Bebas Neue',sans-serif;font-size:2rem;color:var(--wish);line-height:1;margin-bottom:0.2rem;}
+  .wish-stat-label{font-size:0.62rem;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;}
+  .wish-table{background:var(--surface);border:1px solid var(--border);}
+  .wish-table-header{display:grid;grid-template-columns:2.5fr 1fr 1fr 1fr 90px;gap:1rem;padding:0.75rem 1rem;border-bottom:1px solid var(--border);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);}
+  .wish-table-row{display:grid;grid-template-columns:2.5fr 1fr 1fr 1fr 90px;gap:1rem;padding:0.85rem 1rem;border-bottom:1px solid rgba(42,42,42,0.5);font-size:0.82rem;transition:background 0.15s;align-items:center;cursor:pointer;}
+  .wish-table-row:hover{background:var(--wish-dim);}
+  /* VALEUR */
+  .valeur-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-bottom:2.5rem;}
+  .valeur-card{background:var(--surface);border:1px solid var(--border);padding:1.5rem;position:relative;overflow:hidden;}
+  .valeur-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);}
+  .valeur-icon{font-size:1.5rem;margin-bottom:0.75rem;}
+  .valeur-amount{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--accent);line-height:1;margin-bottom:0.3rem;}
+  .valeur-label{font-size:0.65rem;color:var(--text-muted);letter-spacing:0.1em;text-transform:uppercase;}
+  .vinyl-value-list{background:var(--surface);border:1px solid var(--border);}
+  .vvl-header{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:1rem;padding:0.75rem 1rem;border-bottom:1px solid var(--border);font-size:0.62rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);}
+  .vvl-row{display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:1rem;padding:0.85rem 1rem;border-bottom:1px solid rgba(42,42,42,0.5);font-size:0.82rem;transition:background 0.15s;align-items:center;cursor:pointer;}
+  .vvl-row:hover{background:var(--groove);}
+  .vvl-title-col{display:flex;flex-direction:column;}
+  .vvl-artist{font-size:0.62rem;color:var(--accent);letter-spacing:0.08em;text-transform:uppercase;}
+  .vvl-name{font-family:'Playfair Display',serif;font-size:0.9rem;}
+  .price-up{color:#4caf50;}.price-down{color:var(--accent2);}
+  /* CHAT */
+  .chat-layout{display:grid;grid-template-columns:1fr 300px;gap:2rem;height:calc(100vh - 130px);min-height:500px;}
+  .chat-main{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);}
+  .chat-header{padding:1rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0.75rem;}
+  .chat-avatar{width:36px;height:36px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;}
+  .chat-header-info h3{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:0.1em;color:var(--accent);}
+  .chat-header-info p{font-size:0.65rem;color:var(--text-muted);}
+  .chat-messages{flex:1;overflow-y:auto;padding:1.5rem;display:flex;flex-direction:column;gap:1rem;}
+  .chat-messages::-webkit-scrollbar{width:4px;}
+  .chat-messages::-webkit-scrollbar-thumb{background:var(--border);}
+  .chat-msg{max-width:82%;animation:fadeUp 0.3s ease;}
+  .chat-msg.user{align-self:flex-end;}.chat-msg.bot{align-self:flex-start;}
+  .chat-bubble{padding:0.75rem 1rem;font-size:0.83rem;line-height:1.6;}
+  .chat-msg.user .chat-bubble{background:var(--accent);color:#000;}
+  .chat-msg.bot .chat-bubble{background:var(--bg3);border:1px solid var(--border);color:var(--text);}
+  .chat-msg.bot .chat-bubble strong{color:var(--accent);}
+  .chat-msg.bot .chat-bubble em{font-style:italic;color:var(--text-muted);}
+  .chat-msg-time{font-size:0.6rem;color:var(--text-dim);margin-top:0.3rem;padding:0 0.2rem;}
+  .chat-msg.user .chat-msg-time{text-align:right;}
+  .chat-footer{padding:1rem;border-top:1px solid var(--border);display:flex;gap:0.75rem;}
+  .chat-input{flex:1;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:0.83rem;padding:0.7rem 1rem;outline:none;transition:border-color 0.2s;resize:none;}
+  .chat-input:focus{border-color:var(--accent);}
+  .chat-sidebar{display:flex;flex-direction:column;gap:1rem;overflow-y:auto;}
+  .sidebar-section-title{font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:0.1em;color:var(--text-muted);}
+  .suggestion-card{background:var(--surface);border:1px solid var(--border);padding:1rem;transition:all 0.2s;cursor:pointer;}
+  .suggestion-card:hover{border-color:var(--accent);}
+  .suggestion-artist{font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:0.2rem;}
+  .suggestion-title{font-family:'Playfair Display',serif;font-size:0.9rem;margin-bottom:0.3rem;}
+  .suggestion-reason{font-size:0.7rem;color:var(--text-muted);font-style:italic;line-height:1.4;}
+  .quick-actions{display:flex;gap:0.5rem;flex-wrap:wrap;padding:0 1rem 0.5rem;}
+  .quick-btn{background:var(--bg3);border:1px solid var(--border);color:var(--text-muted);font-family:'DM Mono',monospace;font-size:0.68rem;padding:0.4rem 0.75rem;cursor:pointer;transition:all 0.2s;}
+  .quick-btn:hover{border-color:var(--accent);color:var(--accent);}
+  .typing-indicator{display:flex;gap:4px;align-items:center;padding:0.75rem 1rem;background:var(--bg3);border:1px solid var(--border);width:fit-content;}
+  .typing-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:typing 1.2s ease infinite;}
+  .typing-dot:nth-child(2){animation-delay:0.2s;}.typing-dot:nth-child(3){animation-delay:0.4s;}
+  @keyframes typing{0%,60%,100%{opacity:0.3;transform:scale(0.8);}30%{opacity:1;transform:scale(1.1);}}
+  .api-banner{background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--accent);padding:1rem 1.2rem;margin-bottom:1.5rem;font-size:0.8rem;line-height:1.6;display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;}
+  .api-banner input{background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:0.8rem;padding:0.5rem 0.75rem;flex:1;min-width:200px;outline:none;}
+  .api-banner input:focus{border-color:var(--accent);}
+  @media(max-width:768px){.chat-layout{grid-template-columns:1fr;}.chat-sidebar{display:none;}}
+  /* TOKEN BANNER */
+  .token-banner{background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--accent);padding:1rem 1.2rem;margin-bottom:2rem;font-size:0.8rem;line-height:1.6;display:flex;gap:1.5rem;align-items:center;flex-wrap:wrap;}
+  .token-input-row{display:flex;gap:0.5rem;align-items:center;flex:1;min-width:250px;}
+  .token-banner input{background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'DM Mono',monospace;font-size:0.8rem;padding:0.5rem 0.75rem;flex:1;outline:none;}
+  .token-banner input:focus{border-color:var(--accent);}
+  /* MISC */
+  .loading-spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;vertical-align:middle;margin-right:0.4rem;}
+  .toast{position:fixed;bottom:2rem;right:2rem;background:var(--accent);color:#000;font-family:'DM Mono',monospace;font-size:0.78rem;padding:0.8rem 1.2rem;z-index:2000;animation:toastIn 0.3s ease;max-width:300px;}
+  .toast.wish{background:var(--wish);color:#fff;}
+  @keyframes toastIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:none;}}
+  @media(max-width:768px){
+    header{padding:0 0.5rem;}
+    .logo{font-size:1.3rem;}
+    .nav-tab{padding:0.5rem 0.45rem;font-size:0.58rem;}
+    .page{padding:1rem;}
+    .page-title{font-size:2rem;}
+    .detail-layout{grid-template-columns:1fr;}
+    .vvl-header,.vvl-row{grid-template-columns:2fr 1fr 1fr;}
+    .vvl-header>*:nth-child(n+4),.vvl-row>*:nth-child(n+4){display:none;}
+    .wish-table-header,.wish-table-row{grid-template-columns:2fr 1fr 1fr;}
+    .wish-table-header>*:nth-child(n+4),.wish-table-row>*:nth-child(n+4){display:none;}
+    .form-grid{grid-template-columns:1fr;}
+  }
+  @media(max-width:480px){.export-btn{font-size:0.6rem;padding:0.35rem 0.55rem;}}
+  /* SUGGESTIONS PAGE */
+  .sugg-section{margin-bottom:3rem;}
+  .sugg-section-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.5rem;padding-bottom:0.75rem;border-bottom:1px solid var(--border);}
+  .sugg-section-icon{font-size:1.5rem;}
+  .sugg-section-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:0.05em;}
+  .sugg-section-desc{font-size:0.72rem;color:var(--text-muted);margin-left:auto;font-style:italic;}
+  .sugg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.5rem;}
+  .sugg-card{background:var(--surface);border:1px solid var(--border);transition:all 0.25s;position:relative;overflow:hidden;animation:fadeUp 0.4s ease both;}
+  .sugg-card:hover{border-color:var(--accent);transform:translateY(-3px);box-shadow:0 8px 32px rgba(232,197,71,0.12);}
+  .sugg-cover{width:100%;aspect-ratio:1;background:var(--record);overflow:hidden;position:relative;}
+  .sugg-cover img{width:100%;height:100%;object-fit:cover;display:block;}
+  .sugg-tag{position:absolute;top:8px;left:8px;font-size:0.58rem;padding:0.2rem 0.5rem;letter-spacing:0.06em;text-transform:uppercase;font-family:'DM Mono',monospace;}
+  .sugg-tag.similar{background:var(--accent);color:#000;}
+  .sugg-tag.unknown{background:#2a7a4b;color:#fff;}
+  .sugg-tag.rare{background:var(--accent2);color:#fff;}
+  .sugg-info{padding:0.9rem;}
+  .sugg-artist{font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);margin-bottom:0.25rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .sugg-title{font-family:'Playfair Display',serif;font-size:0.95rem;margin-bottom:0.4rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .sugg-reason{font-size:0.7rem;color:var(--text-muted);font-style:italic;line-height:1.4;margin-bottom:0.75rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .sugg-footer{display:flex;justify-content:space-between;align-items:center;gap:0.5rem;}
+  .sugg-price{font-size:0.72rem;color:var(--accent);font-weight:500;}
+  .sugg-actions{display:flex;gap:0.4rem;}
+  .sugg-loading{text-align:center;padding:4rem 2rem;color:var(--text-muted);}
+  .sugg-loading .loading-spinner{width:24px;height:24px;border-width:3px;margin:0 auto 1rem;display:block;}
+  .sugg-empty{text-align:center;padding:3rem 2rem;color:var(--text-muted);font-size:0.85rem;line-height:1.8;}
+  .sugg-refresh-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:2rem;flex-wrap:wrap;gap:1rem;}
+  .sugg-last-update{font-size:0.68rem;color:var(--text-dim);font-style:italic;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><div class="logo-disc"></div>VINYL VAULT</div>
+  <nav class="nav-tabs">
+    <button class="nav-tab active"    onclick="showPage('collection',this)">Collection</button>
+    <button class="nav-tab wish-tab"  onclick="showPage('wishlist',this)">♥ Souhaits</button>
+    <button class="nav-tab"           onclick="showPage('search',this)">Recherche</button>
+    <button class="nav-tab"           onclick="showPage('valeur',this)">Valeur</button>
+    <button class="nav-tab"           onclick="showPage('chat',this)">Conseiller IA</button>
+    <button class="nav-tab"           onclick="showPage('suggestions',this)">✨ Suggestions</button>
+  </nav>
+  <div style="display:flex;gap:0.5rem;align-items:center;flex-shrink:0">
+    <button class="btn export-btn" onclick="exportData()" title="Exporter ma collection" style="font-size:0.68rem;padding:0.4rem 0.7rem;border-color:var(--accent);color:var(--accent)">⬇ Export</button>
+    <button class="btn export-btn" onclick="document.getElementById('import-input').click()" title="Importer une collection" style="font-size:0.68rem;padding:0.4rem 0.7rem">⬆ Import</button>
+    <input type="file" id="import-input" accept=".json" style="display:none" onchange="importData(event)"/>
+  </div>
+</header>
+
+<div class="app">
+
+<!-- ══ COLLECTION ══ -->
+<div id="page-collection" class="page active">
+  <div class="token-banner" id="token-banner">
+    <div>
+      <strong style="color:var(--accent)">🔑 Token Discogs requis</strong><br>
+      <span style="color:var(--text-muted)">Obtiens-le sur <a href="https://www.discogs.com/settings/developers" target="_blank" style="color:var(--accent)">discogs.com/settings/developers</a> (gratuit, 1 minute)</span>
+    </div>
+    <div class="token-input-row">
+      <input type="password" id="discogs-token" placeholder="Colle ton token ici…"/>
+      <button class="btn btn-primary" onclick="saveToken()">Connecter</button>
+    </div>
+  </div>
+  <div class="collection-header">
+    <div><div class="page-title">MA <span>COLLECTION</span></div></div>
+    <div class="collection-stats">
+      <div class="stat"><div class="stat-value" id="stat-count">0</div><div class="stat-label">Vinyles</div></div>
+      <div class="stat"><div class="stat-value" id="stat-value">—</div><div class="stat-label">Valeur est.</div></div>
+      <button class="btn btn-primary" onclick="openAddModal()">+ Ajouter</button>
+    </div>
+  </div>
+  <div class="search-row"><input class="search-box" id="coll-search" placeholder="Rechercher dans ma collection…" oninput="renderCollection()"/></div>
+  <div class="filter-row">
+    <button class="filter-chip active" onclick="setFilter('all',this)">Tous</button>
+    <button class="filter-chip" onclick="setFilter('rock',this)">Rock</button>
+    <button class="filter-chip" onclick="setFilter('jazz',this)">Jazz</button>
+    <button class="filter-chip" onclick="setFilter('electronic',this)">Électro</button>
+    <button class="filter-chip" onclick="setFilter('pop',this)">Pop</button>
+    <button class="filter-chip" onclick="setFilter('hip-hop',this)">Hip-Hop</button>
+    <button class="filter-chip" onclick="setFilter('classique',this)">Classique</button>
+  </div>
+  <div class="vinyl-grid" id="vinyl-grid"></div>
+</div>
+
+<!-- ══ WISHLIST ══ -->
+<div id="page-wishlist" class="page">
+  <div class="collection-header">
+    <div><div class="page-title">LISTE DE <span class="wish">SOUHAITS</span></div></div>
+    <div class="collection-stats">
+      <div class="stat"><div class="stat-value wish" id="wish-count">0</div><div class="stat-label">Souhaits</div></div>
+      <div class="stat"><div class="stat-value wish" id="wish-budget">—</div><div class="stat-label">Budget total</div></div>
+      <button class="btn btn-wish" onclick="openWishModal()">♥ Ajouter</button>
+    </div>
+  </div>
+  <div class="wish-summary" id="wish-summary"></div>
+  <div class="filter-row">
+    <button class="filter-chip wish-chip active" onclick="setWishFilter('all',this)">Tous</button>
+    <button class="filter-chip wish-chip" onclick="setWishFilter('high',this)">🔴 Haute priorité</button>
+    <button class="filter-chip wish-chip" onclick="setWishFilter('medium',this)">🟡 Priorité moyenne</button>
+    <button class="filter-chip wish-chip" onclick="setWishFilter('low',this)">🟢 Priorité basse</button>
+  </div>
+  <div class="search-row"><input class="search-box" id="wish-search" placeholder="Rechercher dans mes souhaits…" oninput="renderWishlist()"/></div>
+  <div class="vinyl-grid" id="wish-grid" style="margin-bottom:2rem"></div>
+  <div id="wish-table-area">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;letter-spacing:0.08em;color:var(--text-muted);margin-bottom:0.75rem">VUE DÉTAILLÉE</div>
+    <div class="wish-table">
+      <div class="wish-table-header"><span>Vinyle</span><span>Priorité</span><span>Prix marché</span><span>Budget max</span><span>Actions</span></div>
+      <div id="wish-table-rows" style="color:var(--text-muted);font-size:0.8rem;padding:2rem;text-align:center">Votre liste de souhaits est vide.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ RECHERCHE ══ -->
+<div id="page-search" class="page">
+  <div class="page-title" style="margin-bottom:1.5rem">RECHERCHE <span>DISCOGS</span></div>
+  <div class="search-row">
+    <input class="search-box" id="discogs-search-input" placeholder="Artiste, album, label, genre…" onkeydown="if(event.key==='Enter') discogsSearch()"/>
+    <select class="form-input" id="search-type" style="width:140px;font-size:0.78rem;padding:0.7rem 1rem">
+      <option value="release">Releases</option>
+      <option value="artist">Artiste</option>
+      <option value="label">Label</option>
+      <option value="master">Master</option>
+    </select>
+    <button class="btn btn-primary" onclick="discogsSearch()">Rechercher</button>
+  </div>
+  <div id="search-results-area"></div>
+</div>
+
+<!-- ══ VALEUR ══ -->
+<div id="page-valeur" class="page">
+  <div class="page-title" style="margin-bottom:1.5rem">VALEUR <span>COLLECTION</span></div>
+  <div class="valeur-grid" id="valeur-stats"></div>
+  <div id="valeur-list-area">
+    <div class="vinyl-value-list">
+      <div class="vvl-header"><span>Vinyle</span><span>Année</span><span>État</span><span>Valeur min</span><span>Valeur med</span></div>
+      <div id="valeur-list-rows" style="color:var(--text-muted);font-size:0.8rem;padding:2rem;text-align:center">Ajoutez des vinyles pour voir leur valorisation.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CHAT ══ -->
+<div id="page-chat" class="page" style="padding-top:1.5rem">
+  <div class="api-banner" id="api-banner">
+    <div>
+      <strong style="color:var(--accent)">🤖 Clé API OpenRouter requise (gratuit)</strong><br>
+      <span style="color:var(--text-muted)">1. Crée un compte sur <a href="https://openrouter.ai/keys" target="_blank" style="color:var(--accent)">openrouter.ai/keys</a><br>
+      2. Clique <strong style="color:var(--text)">Create Key</strong> → copie la clé → colle-la ici</span>
+    </div>
+    <div style="display:flex;gap:0.5rem;flex:1;min-width:250px">
+      <input type="password" id="anthropic-key" placeholder="sk-or-…"/>
+      <button class="btn btn-primary" onclick="saveApiKey()">Activer</button>
+    </div>
+  </div>
+  <div class="chat-layout">
+    <div class="chat-main">
+      <div class="chat-header">
+        <div class="chat-avatar">🎵</div>
+        <div class="chat-header-info">
+          <h3>VINYL GURU</h3>
+          <p>Conseiller IA · Collection · Wishlist · Découvertes</p>
+        </div>
+      </div>
+      <div class="chat-messages" id="chat-messages">
+        <div class="chat-msg bot">
+          <div class="chat-bubble">Salut ! Je suis ton conseiller vinyle personnel 🎶<br><br>
+          Je connais ta <strong>collection</strong> et ta <strong>liste de souhaits</strong> pour te faire des suggestions ultra-personnalisées.<br><br>
+          <em>Qu'est-ce qui te ferait plaisir ?</em></div>
+          <div class="chat-msg-time">Maintenant</div>
+        </div>
+      </div>
+      <div class="quick-actions">
+        <button class="quick-btn" onclick="quickAsk('Suggère-moi des vinyles similaires à ma collection')">💡 Suggestions perso</button>
+        <button class="quick-btn" onclick="quickAsk('Quels vinyles de ma wishlist méritent d\'être achetés en priorité ?')">♥ Prioriser wishlist</button>
+        <button class="quick-btn" onclick="quickAsk('Quels sont les vinyles les plus recherchés en ce moment ?')">🔥 Tendances</button>
+        <button class="quick-btn" onclick="quickAsk('Comment bien entretenir et conserver ses vinyles ?')">📖 Conseils entretien</button>
+      </div>
+      <div class="chat-footer">
+        <textarea class="chat-input" id="chat-input" rows="2" placeholder="Pose ta question sur les vinyles…" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"></textarea>
+        <button class="btn btn-primary" onclick="sendChat()" style="align-self:flex-end">Envoyer</button>
+      </div>
+    </div>
+    <div class="chat-sidebar">
+      <div class="sidebar-section-title">SUGGESTIONS</div>
+      <div id="sidebar-suggestions"><div style="color:var(--text-muted);font-size:0.78rem;line-height:1.6">Les suggestions apparaîtront ici après ta première conversation.</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ SUGGESTIONS ══ -->
+<div id="page-suggestions" class="page">
+  <div class="collection-header">
+    <div><div class="page-title">✨ <span>SUGGESTIONS</span></div></div>
+    <div class="collection-stats">
+      <div class="stat"><div class="stat-value" id="sugg-count">—</div><div class="stat-label">Suggestions</div></div>
+    </div>
+  </div>
+  <div class="sugg-refresh-bar">
+    <div class="sugg-last-update" id="sugg-last-update">Les suggestions se génèrent automatiquement à l'ouverture.</div>
+    <button class="btn btn-primary" onclick="generateSuggestions(true)" id="sugg-refresh-btn">✨ Régénérer</button>
+  </div>
+  <div id="suggestions-content">
+    <div class="sugg-empty">
+      Configure ta clé OpenRouter dans <strong>Conseiller IA</strong> et ajoute des vinyles à ta collection pour obtenir des suggestions personnalisées.
+    </div>
+  </div>
+</div>
+
+</div><!-- /.app -->
+
+<!-- ══ MODAL COLLECTION ══ -->
+<div class="modal-overlay" id="modal-add">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title">AJOUTER UN VINYLE</div><button class="modal-close" onclick="closeModal('modal-add')">×</button></div>
+    <div class="modal-body">
+      <div style="margin-bottom:1.5rem">
+        <div class="form-label" style="margin-bottom:0.5rem">🔍 Recherche rapide Discogs</div>
+        <div style="display:flex;gap:0.5rem">
+          <input class="form-input" id="quick-discogs-search" placeholder="Artiste + Album…" style="flex:1" onkeydown="if(event.key==='Enter') quickSearch('add')"/>
+          <button class="btn btn-primary" onclick="quickSearch('add')">Chercher</button>
+        </div>
+        <div id="quick-discogs-results"></div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:1.5rem">
+        <div class="form-label" style="margin-bottom:1rem">Ou remplir manuellement</div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Artiste *</label><input class="form-input" id="f-artist" placeholder="The Beatles"/></div>
+          <div class="form-group"><label class="form-label">Album *</label><input class="form-input" id="f-title" placeholder="Abbey Road"/></div>
+          <div class="form-group"><label class="form-label">Année</label><input class="form-input" id="f-year" placeholder="1969" type="number"/></div>
+          <div class="form-group"><label class="form-label">Label</label><input class="form-input" id="f-label" placeholder="Apple Records"/></div>
+          <div class="form-group"><label class="form-label">Genre</label>
+            <select class="form-input" id="f-genre">
+              <option value="">— Sélectionner —</option>
+              <option value="rock">Rock</option><option value="jazz">Jazz</option><option value="electronic">Électronique</option>
+              <option value="pop">Pop</option><option value="hip-hop">Hip-Hop</option><option value="classique">Classique</option>
+              <option value="blues">Blues</option><option value="soul">Soul / R&B</option><option value="folk">Folk</option>
+              <option value="metal">Metal</option><option value="autre">Autre</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">État</label>
+            <select class="form-input" id="f-grade">
+              <option value="M">M — Mint</option><option value="NM" selected>NM — Near Mint</option>
+              <option value="VG+">VG+ — Very Good Plus</option><option value="VG">VG — Very Good</option>
+              <option value="G+">G+ — Good Plus</option><option value="G">G — Good</option><option value="F">F — Fair</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Prix payé (€)</label><input class="form-input" id="f-paid" placeholder="0.00" type="number" step="0.01"/></div>
+          <div class="form-group"><label class="form-label">Discogs Release ID</label><input class="form-input" id="f-discogs-id" placeholder="12345678"/></div>
+          <div class="form-group full"><label class="form-label">URL Pochette</label><input class="form-input" id="f-cover" placeholder="https://…"/></div>
+          <div class="form-group full"><label class="form-label">Notes</label><input class="form-input" id="f-notes" placeholder="Pressing original…"/></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn" onclick="closeModal('modal-add')">Annuler</button>
+          <button class="btn btn-primary" onclick="addVinyl()">Ajouter à la collection</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL WISHLIST ══ -->
+<div class="modal-overlay" id="modal-wish">
+  <div class="modal">
+    <div class="modal-header"><div class="modal-title wish">♥ AJOUTER UN SOUHAIT</div><button class="modal-close" onclick="closeModal('modal-wish')">×</button></div>
+    <div class="modal-body">
+      <div style="margin-bottom:1.5rem">
+        <div class="form-label" style="margin-bottom:0.5rem">🔍 Recherche rapide Discogs</div>
+        <div style="display:flex;gap:0.5rem">
+          <input class="form-input" id="wish-discogs-search" placeholder="Artiste + Album…" style="flex:1" onkeydown="if(event.key==='Enter') quickSearch('wish')"/>
+          <button class="btn btn-wish" onclick="quickSearch('wish')">Chercher</button>
+        </div>
+        <div id="wish-discogs-results"></div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding-top:1.5rem">
+        <div class="form-label" style="margin-bottom:1rem">Ou remplir manuellement</div>
+        <div class="form-grid">
+          <div class="form-group"><label class="form-label">Artiste *</label><input class="form-input" id="w-artist" placeholder="Miles Davis"/></div>
+          <div class="form-group"><label class="form-label">Album *</label><input class="form-input" id="w-title" placeholder="Kind of Blue"/></div>
+          <div class="form-group"><label class="form-label">Année</label><input class="form-input" id="w-year" placeholder="1959" type="number"/></div>
+          <div class="form-group"><label class="form-label">Label</label><input class="form-input" id="w-label" placeholder="Columbia"/></div>
+          <div class="form-group"><label class="form-label">Priorité</label>
+            <select class="form-input" id="w-priority">
+              <option value="high">🔴 Haute — Je le veux absolument</option>
+              <option value="medium" selected>🟡 Moyenne — Dans mes plans</option>
+              <option value="low">🟢 Basse — Pourquoi pas</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Budget max (€)</label><input class="form-input" id="w-budget" placeholder="50.00" type="number" step="0.01"/></div>
+          <div class="form-group"><label class="form-label">Discogs Release ID</label><input class="form-input" id="w-discogs-id" placeholder="12345678"/></div>
+          <div class="form-group full"><label class="form-label">URL Pochette</label><input class="form-input" id="w-cover" placeholder="https://…"/></div>
+          <div class="form-group full"><label class="form-label">Pourquoi ce disque ?</label><input class="form-input" id="w-notes" placeholder="Pressing original, recommandé par…"/></div>
+        </div>
+        <div class="form-actions">
+          <button class="btn" onclick="closeModal('modal-wish')">Annuler</button>
+          <button class="btn btn-wish" onclick="addWish()">♥ Ajouter aux souhaits</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL DÉTAIL ══ -->
+<div class="modal-overlay" id="modal-detail">
+  <div class="modal" style="max-width:800px">
+    <div class="modal-header">
+      <div class="modal-title" id="detail-modal-title">DÉTAIL</div>
+      <div style="display:flex;gap:0.5rem;align-items:center">
+        <button class="btn" id="btn-refresh-price" onclick="refreshCurrentPrice()" style="font-size:0.68rem">↻ Prix</button>
+        <button class="btn btn-wish" id="btn-move-to-coll" onclick="moveWishToCollection()" style="font-size:0.68rem;display:none">✓ J'ai ce disque !</button>
+        <button class="btn btn-danger" id="btn-delete" onclick="deleteCurrentItem()" style="font-size:0.68rem">Supprimer</button>
+        <button class="modal-close" onclick="closeModal('modal-detail')">×</button>
+      </div>
+    </div>
+    <div class="modal-body" id="detail-modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ── STATE ──────────────────────────────────────────────────────
+let collection = JSON.parse(localStorage.getItem('vv_collection') || '[]');
+let wishlist   = JSON.parse(localStorage.getItem('vv_wishlist')   || '[]');
+let discogsToken     = localStorage.getItem('vv_token') || '';
+let collFilter       = 'all';
+let wishFilter       = 'all';
+let currentDetailId   = null;
+let currentDetailType = 'collection';
+
+const PRIO = { high:'🔴 Haute', medium:'🟡 Moyenne', low:'🟢 Basse' };
+const PRIO_ORDER = { high:0, medium:1, low:2 };
+
+// ── UTILS ──────────────────────────────────────────────────────
+function toast(msg, cls='') {
+  const t = document.createElement('div');
+  t.className = 'toast'+(cls?' '+cls:'');
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 3000);
+}
+function saveCollection() { localStorage.setItem('vv_collection', JSON.stringify(collection)); updateStats(); renderCollection(); }
+function saveWishlist()   { localStorage.setItem('vv_wishlist',   JSON.stringify(wishlist));   updateWishStats(); renderWishlist(); }
+function showPage(p, el) {
+  document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(e=>e.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  el.classList.add('active');
+  if (p==='valeur')      renderValeurPage();
+  if (p==='wishlist')    { updateWishStats(); renderWishlist(); }
+  if (p==='suggestions') initSuggestionsPage();
+}
+function openAddModal()  { document.getElementById('modal-add').classList.add('open'); }
+function openWishModal() { document.getElementById('modal-wish').classList.add('open'); }
+function closeModal(id)  { document.getElementById(id).classList.remove('open'); }
+function setFilter(f, el) {
+  collFilter=f;
+  document.querySelectorAll('#page-collection .filter-chip').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active'); renderCollection();
+}
+function setWishFilter(f, el) {
+  wishFilter=f;
+  document.querySelectorAll('#page-wishlist .filter-chip').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active'); renderWishlist();
+}
+const genId = ()=>Date.now().toString(36)+Math.random().toString(36).slice(2);
+const fmt   = p=>(p===null||p===undefined||isNaN(p))?'—':new Intl.NumberFormat('fr-FR',{style:'currency',currency:'EUR'}).format(p);
+const gv    = id=>document.getElementById(id)?.value||'';
+const sv    = (id,v)=>{ const e=document.getElementById(id); if(e) e.value=v; };
+const clr   = ids=>ids.forEach(id=>sv(id,''));
+
+// ── TOKEN ──────────────────────────────────────────────────────
+async function saveToken() {
+  const v = document.getElementById('discogs-token').value.trim();
+  if (!v) { toast('Token vide !'); return; }
+  discogsToken=v; localStorage.setItem('vv_token',v);
+  toast('Test de connexion…');
+  // Test avec l'endpoint identity
+  const test = await dFetch('https://api.discogs.com/oauth/identity');
+  if (test?.username) {
+    document.getElementById('token-banner').innerHTML=`
+      <div style="display:flex;align-items:center;gap:0.75rem;width:100%">
+        <span style="color:#4caf50;font-size:1.2rem">✓</span>
+        <div><strong style="color:#4caf50">Connecté à Discogs</strong> — <span style="color:var(--text-muted)">Compte&nbsp;: <strong style="color:var(--text)">${test.username}</strong></span></div>
+        <button class="btn btn-danger" onclick="clearToken()" style="margin-left:auto;font-size:0.65rem">Déconnecter</button>
+      </div>`;
+    toast('✓ Connecté en tant que '+test.username);
+  } else {
+    document.getElementById('token-banner').style.opacity='0.5';
+    toast('✓ Token sauvegardé');
+  }
+}
+function clearToken() { discogsToken=''; localStorage.removeItem('vv_token'); location.reload(); }
+
+// ── DISCOGS API — appel direct avec le token (pas de CORS avec Authorization) ──
+async function dFetch(url) {
+  if (!discogsToken) { toast('⚠ Token Discogs manquant !'); return null; }
+  try {
+    const r = await fetch(url, {
+      headers: {
+        'Authorization': `Discogs token=${discogsToken}`,
+        'User-Agent': 'VinylVaultApp/1.0'
+      }
+    });
+    if (!r.ok) { console.error('Discogs', r.status); return null; }
+    return await r.json();
+  } catch(e) { console.error(e); return null; }
+}
+
+// ── COLLECTION ─────────────────────────────────────────────────
+function updateStats() {
+  document.getElementById('stat-count').textContent = collection.length;
+  const total = collection.reduce((s,v)=>s+(v.marketValue||0),0);
+  document.getElementById('stat-value').textContent = total>0?fmt(total):'—';
+}
+function renderCollection() {
+  const q=(gv('coll-search')).toLowerCase();
+  const items=collection.filter(v=>{
+    const mf=collFilter==='all'||(v.genre||'').toLowerCase()===collFilter;
+    const ms=!q||v.artist.toLowerCase().includes(q)||v.title.toLowerCase().includes(q);
+    return mf&&ms;
+  });
+  const grid=document.getElementById('vinyl-grid');
+  if (!items.length) {
+    grid.innerHTML=`<div class="empty-state">${bigSVG()}<p>${collection.length===0?'Collection vide. Cliquez sur <strong>+ Ajouter</strong>.':'Aucun résultat.'}</p></div>`;
+    return;
+  }
+  grid.innerHTML=items.map((v,i)=>`
+    <div class="vinyl-card" onclick="openDetail('${v.id}','collection')" style="animation-delay:${i*.04}s">
+      <div class="vinyl-cover">${v.cover?`<img src="${v.cover}" alt="" onerror="this.parentNode.innerHTML=recSVG()">`:recSVG()}</div>
+      ${v.grade?`<div class="vinyl-grade">${v.grade}</div>`:''}
+      <div class="vinyl-info">
+        <div class="vinyl-artist">${v.artist}</div>
+        <div class="vinyl-title">${v.title}</div>
+        <div class="vinyl-meta"><span class="vinyl-year">${v.year||''}</span><span class="vinyl-price">${v.marketValue?fmt(v.marketValue):v.paid?fmt(v.paid):'—'}</span></div>
+      </div>
+    </div>`).join('');
+}
+
+// ── WISHLIST ───────────────────────────────────────────────────
+function updateWishStats() {
+  const c={high:0,medium:0,low:0}; let bgt=0;
+  wishlist.forEach(w=>{ c[w.priority]=(c[w.priority]||0)+1; if(w.budget) bgt+=w.budget; });
+  document.getElementById('wish-count').textContent=wishlist.length;
+  document.getElementById('wish-budget').textContent=bgt>0?fmt(bgt):'—';
+  document.getElementById('wish-summary').innerHTML=`
+    <div class="wish-stat-card"><div class="wish-stat-value">${c.high}</div><div class="wish-stat-label">🔴 Priorité haute</div></div>
+    <div class="wish-stat-card"><div class="wish-stat-value">${c.medium}</div><div class="wish-stat-label">🟡 Priorité moyenne</div></div>
+    <div class="wish-stat-card"><div class="wish-stat-value">${c.low}</div><div class="wish-stat-label">🟢 Priorité basse</div></div>
+    <div class="wish-stat-card"><div class="wish-stat-value" style="font-size:1.6rem">${fmt(wishlist.reduce((s,w)=>s+(w.marketValue||0),0))}</div><div class="wish-stat-label">Valeur marché</div></div>`;
+}
+function renderWishlist() {
+  const q=(gv('wish-search')).toLowerCase();
+  const items=[...wishlist].filter(w=>{
+    const mf=wishFilter==='all'||w.priority===wishFilter;
+    const ms=!q||w.artist.toLowerCase().includes(q)||w.title.toLowerCase().includes(q);
+    return mf&&ms;
+  }).sort((a,b)=>PRIO_ORDER[a.priority]-PRIO_ORDER[b.priority]);
+
+  const grid=document.getElementById('wish-grid');
+  grid.innerHTML=!items.length
+    ?`<div class="empty-state"><svg width="80" height="80" viewBox="0 0 80 80" fill="none"><path d="M40 68C40 68 10 50 10 30C10 18 19 10 30 14C35 16 40 22 40 22C40 22 45 16 50 14C61 10 70 18 70 30C70 50 40 68 40 68Z" stroke="#7b6fe0" stroke-width="2" fill="none"/></svg><p>${wishlist.length===0?'Liste vide. Cliquez sur <strong>♥ Ajouter</strong>.':'Aucun résultat.'}</p></div>`
+    :items.map((w,i)=>`
+      <div class="vinyl-card wish-card" onclick="openDetail('${w.id}','wishlist')" style="animation-delay:${i*.04}s">
+        <div class="vinyl-cover">${w.cover?`<img src="${w.cover}" alt="" onerror="this.parentNode.innerHTML=recSVG()">`:recSVG()}</div>
+        <div class="wish-badge">♥</div>
+        <div class="priority-badge">${w.priority==='high'?'🔴':w.priority==='medium'?'🟡':'🟢'}</div>
+        <div class="vinyl-info">
+          <div class="vinyl-artist wish">${w.artist}</div>
+          <div class="vinyl-title">${w.title}</div>
+          <div class="vinyl-meta"><span class="vinyl-year">${w.year||''}</span><span class="vinyl-price wish">${w.marketValue?fmt(w.marketValue):w.budget?'≤ '+fmt(w.budget):'—'}</span></div>
+        </div>
+      </div>`).join('');
+
+  const tbody=document.getElementById('wish-table-rows');
+  if (!items.length) { tbody.innerHTML='<div style="padding:2rem;text-align:center;color:var(--text-muted);font-size:0.8rem">Aucun souhait.</div>'; return; }
+  tbody.innerHTML=items.map(w=>`
+    <div class="wish-table-row" onclick="openDetail('${w.id}','wishlist')">
+      <div class="vvl-title-col">
+        <span class="vvl-artist" style="color:var(--wish)">${w.artist}</span>
+        <span class="vvl-name">${w.title}</span>
+        ${w.notes?`<span style="font-size:0.65rem;color:var(--text-muted);font-style:italic">${w.notes}</span>`:''}
+      </div>
+      <div>${PRIO[w.priority]||'—'}</div>
+      <div style="color:var(--wish)">${w.marketValue?fmt(w.marketValue):'—'}</div>
+      <div>${w.budget?fmt(w.budget):'—'}</div>
+      <div style="display:flex;gap:0.35rem;flex-wrap:wrap">
+        <button class="btn" style="padding:0.25rem 0.5rem;font-size:0.6rem" onclick="event.stopPropagation();refreshItemPrice('${w.id}','wishlist')" title="Actualiser prix">↻</button>
+        <button class="btn btn-wish" style="padding:0.25rem 0.5rem;font-size:0.6rem" onclick="event.stopPropagation();moveWishById('${w.id}')" title="J'ai ce disque !">✓</button>
+        <button class="btn btn-danger" style="padding:0.25rem 0.5rem;font-size:0.6rem" onclick="event.stopPropagation();deleteItem('${w.id}','wishlist')" title="Supprimer">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+// ── ADD ────────────────────────────────────────────────────────
+function addVinyl() {
+  const artist=gv('f-artist').trim(), title=gv('f-title').trim();
+  if (!artist||!title) { toast('Artiste et album requis !'); return; }
+  const v={id:genId(),artist,title,year:gv('f-year'),label:gv('f-label'),genre:gv('f-genre'),grade:gv('f-grade'),
+    paid:parseFloat(gv('f-paid'))||null,discogsId:gv('f-discogs-id'),cover:gv('f-cover'),notes:gv('f-notes'),
+    marketValue:null,marketMin:null,marketMax:null,addedAt:new Date().toISOString()};
+  collection.push(v); saveCollection(); closeModal('modal-add');
+  toast('✓ "'+title+'" ajouté à la collection');
+  if (v.discogsId) fetchPrice(v,'collection');
+  clr(['f-artist','f-title','f-year','f-label','f-cover','f-discogs-id','f-notes','f-paid']);
+  sv('f-genre',''); sv('f-grade','NM');
+  document.getElementById('quick-discogs-results').innerHTML='';
+}
+function addWish() {
+  const artist=gv('w-artist').trim(), title=gv('w-title').trim();
+  if (!artist||!title) { toast('Artiste et album requis !'); return; }
+  const w={id:genId(),artist,title,year:gv('w-year'),label:gv('w-label'),priority:gv('w-priority')||'medium',
+    budget:parseFloat(gv('w-budget'))||null,discogsId:gv('w-discogs-id'),cover:gv('w-cover'),notes:gv('w-notes'),
+    marketValue:null,marketMin:null,marketMax:null,addedAt:new Date().toISOString()};
+  wishlist.push(w); saveWishlist(); closeModal('modal-wish');
+  toast('♥ "'+title+'" ajouté aux souhaits','wish');
+  if (w.discogsId) fetchPrice(w,'wishlist');
+  clr(['w-artist','w-title','w-year','w-label','w-cover','w-discogs-id','w-notes','w-budget']);
+  sv('w-priority','medium');
+  document.getElementById('wish-discogs-results').innerHTML='';
+}
+
+// ── MOVE WISH → COLLECTION ─────────────────────────────────────
+function moveWishById(id) {
+  const w=wishlist.find(x=>x.id===id); if (!w) return;
+  const v={...w,grade:'NM',paid:null,genre:'',addedAt:new Date().toISOString()};
+  delete v.priority; delete v.budget;
+  collection.push(v); wishlist=wishlist.filter(x=>x.id!==id);
+  saveCollection(); saveWishlist();
+  toast('✓ "'+w.title+'" déplacé dans la collection !');
+}
+function moveWishToCollection() {
+  if (currentDetailType!=='wishlist') return;
+  moveWishById(currentDetailId);
+  closeModal('modal-detail');
+}
+
+// ── DISCOGS SEARCH ─────────────────────────────────────────────
+async function discogsSearch() {
+  if (!discogsToken) { toast('⚠ Configure ton token Discogs d\'abord !'); return; }
+  const q=gv('discogs-search-input'), type=gv('search-type');
+  const area=document.getElementById('search-results-area');
+  if (!q) return;
+  area.innerHTML=`<div style="padding:2rem;color:var(--text-muted)"><span class="loading-spinner"></span>Recherche…</div>`;
+  const data=await dFetch(`https://api.discogs.com/database/search?q=${encodeURIComponent(q)}&type=${type}&per_page=20`);
+  if (!data?.results) { area.innerHTML=`<div style="padding:2rem;color:var(--accent2)">⚠ Erreur Discogs. Vérifie ton token.</div>`; return; }
+  if (!data.results.length) { area.innerHTML=`<div style="padding:2rem;color:var(--text-muted)">Aucun résultat pour "${q}"</div>`; return; }
+  area.innerHTML=`<div class="discogs-results">${data.results.map(r=>`
+    <div class="discogs-result-item" onclick="openSearchDetail(${r.id},'${r.type||'release'}')">
+      <img class="discogs-thumb" src="${r.thumb||''}" onerror="this.style.display='none'" alt="">
+      <div class="discogs-result-info">
+        <div class="discogs-result-title">${r.title||'—'}</div>
+        <div class="discogs-result-sub">${[r.year,r.country,(r.genre||[]).join(', ')].filter(Boolean).join(' · ')}</div>
+        ${r.label?`<div class="discogs-result-sub">${r.label.join(', ')}</div>`:''}
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.4rem;flex-shrink:0">
+        <button class="btn btn-primary" style="font-size:0.65rem;padding:0.3rem 0.6rem" onclick="event.stopPropagation();importFromDiscogs(${r.id},'collection')">+ Collection</button>
+        <button class="btn btn-wish" style="font-size:0.65rem;padding:0.3rem 0.6rem" onclick="event.stopPropagation();importFromDiscogs(${r.id},'wishlist')">♥ Souhait</button>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+async function quickSearch(target) {
+  if (!discogsToken) { toast('⚠ Configure ton token Discogs d\'abord !'); return; }
+  const qId  = target==='wish'?'wish-discogs-search':'quick-discogs-search';
+  const resId = target==='wish'?'wish-discogs-results':'quick-discogs-results';
+  const q=document.getElementById(qId).value.trim(); if (!q) return;
+  const area=document.getElementById(resId);
+  area.innerHTML=`<div style="padding:1rem;color:var(--text-muted);font-size:0.8rem"><span class="loading-spinner"></span>Recherche…</div>`;
+  const data=await dFetch(`https://api.discogs.com/database/search?q=${encodeURIComponent(q)}&type=release&per_page=8`);
+  if (!data?.results) { area.innerHTML=`<div style="padding:1rem;color:var(--accent2);font-size:0.78rem">⚠ Erreur.</div>`; return; }
+  area.innerHTML=`<div class="discogs-results" style="margin-top:0.75rem">${(data.results||[]).map(r=>`
+    <div class="discogs-result-item" onclick="prefill(${r.id},'${target}')">
+      <img class="discogs-thumb" src="${r.thumb||''}" onerror="this.style.display='none'" alt="">
+      <div class="discogs-result-info">
+        <div class="discogs-result-title">${r.title||'—'}</div>
+        <div class="discogs-result-sub">${[r.year,(r.label||[]).join(', ')].filter(Boolean).join(' · ')}</div>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+async function prefill(releaseId, target) {
+  const data=await dFetch(`https://api.discogs.com/releases/${releaseId}`);
+  if (!data) { toast('Impossible de charger'); return; }
+  const p=target==='wish'?'w':'f';
+  const resId=target==='wish'?'wish-discogs-results':'quick-discogs-results';
+  sv(p+'-artist', data.artists_sort||(data.artists||[]).map(a=>a.name).join(', ')||'');
+  sv(p+'-title',  data.title||'');
+  sv(p+'-year',   data.year||'');
+  sv(p+'-label',  (data.labels||[]).map(l=>l.name).join(', '));
+  sv(p+'-discogs-id', String(releaseId));
+  if (data.images?.[0]) sv(p+'-cover', data.images[0].uri||'');
+  if (target!=='wish' && data.genres?.[0]) {
+    const g=data.genres[0].toLowerCase();
+    const map={rock:'rock',jazz:'jazz',electronic:'electronic',pop:'pop','hip hop':'hip-hop',classical:'classique'};
+    sv('f-genre', Object.keys(map).find(k=>g.includes(k))?map[Object.keys(map).find(k=>g.includes(k))]:'autre');
+  }
+  document.getElementById(resId).innerHTML=`<div style="padding:0.5rem;color:#4caf50;font-size:0.78rem">✓ Données importées depuis Discogs</div>`;
+}
+
+async function importFromDiscogs(releaseId, target) {
+  await prefill(releaseId, target==='wishlist'?'wish':'add');
+  toast('Données importées — vérifiez et confirmez');
+  document.getElementById(target==='wishlist'?'modal-wish':'modal-add').classList.add('open');
+}
+
+// ── PRICES ────────────────────────────────────────────────────
+async function fetchPrice(item, type) {
+  if (!item.discogsId||!discogsToken) return;
+  const data=await dFetch(`https://api.discogs.com/marketplace/stats/${item.discogsId}`);
+  if (!data) return;
+  const arr=type==='wishlist'?wishlist:collection;
+  const idx=arr.findIndex(v=>v.id===item.id); if (idx===-1) return;
+  if (data.lowest_price?.value)  arr[idx].marketMin   = data.lowest_price.value;
+  if (data.median_price?.value)  arr[idx].marketValue = data.median_price.value;
+  if (data.highest_price?.value) arr[idx].marketMax   = data.highest_price.value;
+  if (type==='wishlist') saveWishlist(); else saveCollection();
+}
+async function refreshItemPrice(id, type) {
+  const arr=type==='wishlist'?wishlist:collection;
+  const item=arr.find(v=>v.id===id);
+  if (!item||!item.discogsId) { toast('Aucun Discogs ID'); return; }
+  toast('Récupération du prix…');
+  await fetchPrice(item,type);
+  if (type==='wishlist') renderWishlist();
+  toast('✓ Prix mis à jour');
+}
+
+// ── DETAIL ────────────────────────────────────────────────────
+async function openSearchDetail(id, type) {
+  const data=await dFetch(`https://api.discogs.com/${type}s/${id}`);
+  if (!data) return;
+  currentDetailId=null; currentDetailType='search';
+  document.getElementById('detail-modal-title').textContent=data.title||'DÉTAIL';
+  document.getElementById('detail-modal-title').className='modal-title';
+  document.getElementById('btn-delete').style.display='none';
+  document.getElementById('btn-refresh-price').style.display='none';
+  document.getElementById('btn-move-to-coll').style.display='none';
+  document.getElementById('detail-modal-body').innerHTML=buildSearchHTML(data,id);
+  document.getElementById('modal-detail').classList.add('open');
+}
+
+async function openDetail(id, type) {
+  const arr=type==='wishlist'?wishlist:collection;
+  const item=arr.find(v=>v.id===id); if (!item) return;
+  currentDetailId=id; currentDetailType=type;
+  const titleEl=document.getElementById('detail-modal-title');
+  titleEl.textContent=item.artist.toUpperCase();
+  titleEl.className='modal-title'+(type==='wishlist'?' wish':'');
+  document.getElementById('btn-delete').style.display='';
+  document.getElementById('btn-refresh-price').style.display='';
+  document.getElementById('btn-move-to-coll').style.display=type==='wishlist'?'':'none';
+  let dd=null;
+  if (item.discogsId) dd=await dFetch(`https://api.discogs.com/releases/${item.discogsId}`);
+  document.getElementById('detail-modal-body').innerHTML=buildDetailHTML(item,dd,type);
+  document.getElementById('modal-detail').classList.add('open');
+}
+
+function buildDetailHTML(item, dd, type) {
+  const isW=type==='wishlist';
+  const ac=isW?'var(--wish)':'var(--accent)';
+  const tracks=dd?.tracklist||[];
+  return `<div class="detail-layout">
+    <div class="detail-cover">${item.cover?`<img src="${item.cover}" alt="">`:recSVG()}</div>
+    <div class="detail-info">
+      <div class="detail-artist ${isW?'wish':''}">${item.artist}</div>
+      <div class="detail-title">${item.title}</div>
+      ${isW?`<div style="font-size:0.75rem;padding:0.3rem 0.6rem;border:1px solid ${ac};color:${ac};display:inline-block;width:fit-content">${PRIO[item.priority]||'—'}</div>`:''}
+      <div class="detail-row">
+        <div class="detail-field"><div class="detail-field-label">Année</div><div class="detail-field-value">${item.year||'—'}</div></div>
+        <div class="detail-field"><div class="detail-field-label">Label</div><div class="detail-field-value">${item.label||dd?.labels?.[0]?.name||'—'}</div></div>
+        ${!isW?`<div class="detail-field"><div class="detail-field-label">État</div><div class="detail-field-value">${item.grade||'—'}</div></div>`:''}
+      </div>
+      <div class="detail-row">
+        <div class="detail-field">
+          <div class="detail-field-label">Prix marché</div>
+          <div class="price-highlight" style="color:${ac}">${item.marketValue?fmt(item.marketValue):'—'}</div>
+          ${item.marketMin||item.marketMax?`<div class="price-range">${item.marketMin?fmt(item.marketMin):'?'} – ${item.marketMax?fmt(item.marketMax):'?'}</div>`:''}
+        </div>
+        ${isW
+          ?`<div class="detail-field"><div class="detail-field-label">Budget max</div>
+             <div class="detail-field-value" style="font-size:1rem;color:${ac}">${item.budget?fmt(item.budget):'—'}</div>
+             ${item.budget&&item.marketValue?`<div class="price-range" style="color:${item.marketValue<=item.budget?'#4caf50':'var(--accent2)'}">
+               ${item.marketValue<=item.budget?'✓ Dans le budget':'⚠ Dépasse le budget'}</div>`:''}</div>`
+          :`<div class="detail-field"><div class="detail-field-label">Prix payé</div>
+             <div class="detail-field-value" style="font-size:1rem">${item.paid?fmt(item.paid):'—'}</div>
+             ${item.paid&&item.marketValue?`<div class="price-range" style="color:${item.marketValue>item.paid?'#4caf50':'var(--accent2)'}">
+               ${item.marketValue>item.paid?'▲':'▼'} ${fmt(Math.abs(item.marketValue-item.paid))}</div>`:''}</div>`}
+        <div class="detail-field"><div class="detail-field-label">Discogs ID</div><div class="detail-field-value">
+          ${item.discogsId?`<a href="https://www.discogs.com/release/${item.discogsId}" target="_blank" style="color:${ac}">#${item.discogsId}</a>`:'—'}
+        </div></div>
+      </div>
+      ${item.notes?`<div style="font-size:0.8rem;color:var(--text-muted);font-style:italic;padding:0.5rem 0;border-top:1px solid var(--border)">${item.notes}</div>`:''}
+    </div>
+  </div>
+  ${tracks.length?`<div class="tracklist"><div class="tracklist-title">Tracklist (${tracks.length} titres)</div>
+    ${tracks.map(t=>`<div class="track"><span class="track-pos">${t.position}</span><span class="track-title">${t.title}</span><span class="track-duration">${t.duration||''}</span></div>`).join('')}</div>`:''}`;
+}
+
+function buildSearchHTML(data, id) {
+  const tracks=data.tracklist||[];
+  return `<div class="detail-layout">
+    <div class="detail-cover">${data.images?.[0]?`<img src="${data.images[0].uri}" alt="">`:recSVG()}</div>
+    <div class="detail-info">
+      <div class="detail-artist">${(data.artists||[]).map(a=>a.name).join(', ')||'—'}</div>
+      <div class="detail-title">${data.title||'—'}</div>
+      <div class="detail-row">
+        <div class="detail-field"><div class="detail-field-label">Année</div><div class="detail-field-value">${data.year||'—'}</div></div>
+        <div class="detail-field"><div class="detail-field-label">Pays</div><div class="detail-field-value">${data.country||'—'}</div></div>
+        <div class="detail-field"><div class="detail-field-label">Label</div><div class="detail-field-value">${data.labels?.[0]?.name||'—'}</div></div>
+      </div>
+      <div style="display:flex;gap:0.5rem;margin-top:0.75rem;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="importFromDiscogs(${id},'collection')">+ Ajouter à ma collection</button>
+        <button class="btn btn-wish" onclick="importFromDiscogs(${id},'wishlist')">♥ Ajouter aux souhaits</button>
+      </div>
+    </div>
+  </div>
+  ${tracks.length?`<div class="tracklist"><div class="tracklist-title">Tracklist</div>
+    ${tracks.map(t=>`<div class="track"><span class="track-pos">${t.position}</span><span class="track-title">${t.title}</span><span class="track-duration">${t.duration||''}</span></div>`).join('')}</div>`:''}`;
+}
+
+async function refreshCurrentPrice() {
+  if (!currentDetailId) return;
+  const arr=currentDetailType==='wishlist'?wishlist:collection;
+  const item=arr.find(v=>v.id===currentDetailId);
+  if (!item||!item.discogsId) { toast('Aucun Discogs ID'); return; }
+  toast('Récupération du prix…');
+  await fetchPrice(item,currentDetailType);
+  openDetail(currentDetailId,currentDetailType);
+  toast('✓ Prix mis à jour');
+}
+function deleteItem(id,type) {
+  if (type==='wishlist') { wishlist=wishlist.filter(v=>v.id!==id); saveWishlist(); }
+  else { collection=collection.filter(v=>v.id!==id); saveCollection(); }
+}
+function deleteCurrentItem() {
+  if (!currentDetailId) return;
+  if (!confirm('Supprimer ce vinyle ?')) return;
+  deleteItem(currentDetailId,currentDetailType);
+  closeModal('modal-detail');
+  toast('Vinyle supprimé');
+}
+
+// ── VALEUR ────────────────────────────────────────────────────
+function renderValeurPage() {
+  const tot=collection.reduce((s,v)=>s+(v.marketValue||0),0);
+  const inv=collection.reduce((s,v)=>s+(v.paid||0),0);
+  const mn =collection.reduce((s,v)=>s+(v.marketMin||0),0);
+  const mx =Math.max(0,...collection.map(v=>v.marketValue||0));
+  const wt =wishlist.reduce((s,w)=>s+(w.marketValue||0),0);
+  document.getElementById('valeur-stats').innerHTML=`
+    <div class="valeur-card"><div class="valeur-icon">💰</div><div class="valeur-amount">${fmt(tot)}</div><div class="valeur-label">Valeur médiane collection</div></div>
+    <div class="valeur-card"><div class="valeur-icon">📉</div><div class="valeur-amount">${fmt(mn)}</div><div class="valeur-label">Valeur minimale</div></div>
+    <div class="valeur-card"><div class="valeur-icon">🧾</div><div class="valeur-amount">${fmt(inv)}</div><div class="valeur-label">Total investi</div></div>
+    <div class="valeur-card"><div class="valeur-icon">${tot>=inv?'📈':'📊'}</div>
+      <div class="valeur-amount" style="color:${tot>=inv?'#4caf50':'var(--accent2)'}">${tot>=inv?'+':''}${fmt(tot-inv)}</div>
+      <div class="valeur-label">Plus/Moins-value</div></div>
+    <div class="valeur-card"><div class="valeur-icon">⭐</div><div class="valeur-amount">${fmt(mx)}</div><div class="valeur-label">Vinyle le plus précieux</div></div>
+    <div class="valeur-card" style="border-top-color:var(--wish)"><div class="valeur-icon">♥</div>
+      <div class="valeur-amount" style="color:var(--wish)">${fmt(wt)}</div><div class="valeur-label">Valeur wishlist</div></div>`;
+
+  const sorted=[...collection].sort((a,b)=>(b.marketValue||0)-(a.marketValue||0));
+  const el=document.getElementById('valeur-list-rows');
+  if (!sorted.length) { el.innerHTML='<div style="padding:2rem;text-align:center;color:var(--text-muted);font-size:0.8rem">Aucun vinyle.</div>'; return; }
+  el.innerHTML=sorted.map(v=>{
+    const g=v.marketValue&&v.paid?v.marketValue-v.paid:null;
+    return `<div class="vvl-row" onclick="openDetail('${v.id}','collection')">
+      <div class="vvl-title-col"><span class="vvl-artist">${v.artist}</span><span class="vvl-name">${v.title}</span></div>
+      <div>${v.year||'—'}</div><div>${v.grade||'—'}</div>
+      <div>${v.marketMin?fmt(v.marketMin):'—'}</div>
+      <div>${v.marketValue?fmt(v.marketValue):'—'}${g!==null?`<span class="${g>=0?'price-up':'price-down'}" style="font-size:0.7rem"> ${g>=0?'+':''}${fmt(g)}</span>`:''}</div>
+    </div>`;
+  }).join('');
+
+  const area=document.getElementById('valeur-list-area');
+  if (!area.querySelector('.rab')) {
+    const btn=document.createElement('button');
+    btn.className='btn btn-primary rab'; btn.style.marginTop='1rem';
+    btn.textContent='↻ Actualiser tous les prix Discogs'; btn.onclick=refreshAllPrices;
+    area.appendChild(btn);
+  }
+}
+async function refreshAllPrices() {
+  if (!discogsToken) { toast('⚠ Token Discogs manquant'); return; }
+  const all=[
+    ...collection.filter(v=>v.discogsId).map(v=>({item:v,type:'collection'})),
+    ...wishlist.filter(w=>w.discogsId).map(w=>({item:w,type:'wishlist'}))
+  ];
+  if (!all.length) { toast('Aucun vinyle avec un Discogs ID'); return; }
+  toast(`Récupération de ${all.length} prix…`);
+  for (const {item,type} of all) { await fetchPrice(item,type); await new Promise(r=>setTimeout(r,400)); }
+  renderValeurPage(); toast('✓ Tous les prix mis à jour');
+}
+
+// ── SVG ───────────────────────────────────────────────────────
+function recSVG() {
+  return `<div class="vinyl-cover-placeholder"><svg class="record-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="100" cy="100" r="98" fill="#1a1a1a" stroke="#2a2a2a" stroke-width="2"/>
+    <circle cx="100" cy="100" r="78" fill="none" stroke="#222" stroke-width="1"/>
+    <circle cx="100" cy="100" r="58" fill="none" stroke="#222" stroke-width="1"/>
+    <circle cx="100" cy="100" r="38" fill="none" stroke="#222" stroke-width="1"/>
+    <circle cx="100" cy="100" r="18" fill="#0a0a0a" stroke="#e8c547" stroke-width="1.5"/>
+    <circle cx="100" cy="100" r="5" fill="#e8c547"/>
+  </svg></div>`;
+}
+function bigSVG() {
+  return `<svg width="80" height="80" viewBox="0 0 80 80" fill="none">
+    <circle cx="40" cy="40" r="38" stroke="#e8c547" stroke-width="2"/>
+    <circle cx="40" cy="40" r="22" stroke="#e8c547" stroke-width="1"/>
+    <circle cx="40" cy="40" r="6" fill="#e8c547"/>
+  </svg>`;
+}
+
+// ── API KEY ANTHROPIC ─────────────────────────────────────────
+let anthropicKey = localStorage.getItem('vv_anthropic_key') || '';
+let chatHistory  = [];
+
+function saveApiKey() {
+  const v = document.getElementById('anthropic-key').value.trim();
+  if (!v || !v.startsWith('sk-or-')) { toast('Clé invalide — elle doit commencer par "sk-or-"'); return; }
+  anthropicKey = v;
+  localStorage.setItem('vv_anthropic_key', v);
+  document.getElementById('api-banner').innerHTML = `
+    <div style="display:flex;align-items:center;gap:0.75rem;width:100%">
+      <span style="color:#4caf50;font-size:1.2rem">✓</span>
+      <div><strong style="color:#4caf50">OpenRouter configuré</strong> — <span style="color:var(--text-muted)">Le chatbot est actif (modèle gratuit auto)</span></div>
+      <button class="btn btn-danger" onclick="clearApiKey()" style="margin-left:auto;font-size:0.65rem">Supprimer la clé</button>
+    </div>`;
+  toast('✓ Clé OpenRouter sauvegardée — le chatbot est prêt !');
+}
+function clearApiKey() {
+  anthropicKey = ''; localStorage.removeItem('vv_anthropic_key'); location.reload();
+}
+
+// ── CHATBOT ───────────────────────────────────────────────────
+function collSummary() {
+  const c = collection.length
+    ? `Collection (${collection.length} vinyles, valeur totale: ${fmt(collection.reduce((s,v)=>s+(v.marketValue||0),0))}):\n`
+      + collection.map(v=>`- ${v.artist} — ${v.title} (${v.year||'?'}, ${v.genre||'?'}, état: ${v.grade||'?'}${v.marketValue?', '+fmt(v.marketValue):''})`).join('\n')
+    : 'Collection vide.';
+  const w = wishlist.length
+    ? `\n\nListe de souhaits (${wishlist.length} disques):\n`
+      + wishlist.map(w=>`- [${PRIO[w.priority]}] ${w.artist} — ${w.title}${w.marketValue?', prix: '+fmt(w.marketValue):''}${w.budget?', budget max: '+fmt(w.budget):''}`).join('\n')
+    : '\n\nListe de souhaits vide.';
+  return c + w;
+}
+
+function getTime() { return new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'}); }
+
+function appendMsg(role, text) {
+  const c = document.getElementById('chat-messages');
+  const d = document.createElement('div');
+  d.className = `chat-msg ${role}`;
+  d.innerHTML = `<div class="chat-bubble">${text
+    .replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>')
+    .replace(/\*(.*?)\*/g,'<em>$1</em>')
+    .replace(/\n/g,'<br>')
+  }</div><div class="chat-msg-time">${getTime()}</div>`;
+  c.appendChild(d);
+  c.scrollTop = c.scrollHeight;
+}
+
+function showTyping() {
+  const c = document.getElementById('chat-messages');
+  const d = document.createElement('div');
+  d.className = 'chat-msg bot'; d.id = 'typing-indicator';
+  d.innerHTML = `<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+  c.appendChild(d); c.scrollTop = c.scrollHeight;
+}
+function removeTyping() { document.getElementById('typing-indicator')?.remove(); }
+
+async function sendChat() {
+  if (!anthropicKey) { toast('⚠ Configure ta clé API Anthropic en haut de la page Conseiller IA'); return; }
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim(); if (!msg) return;
+  input.value = '';
+  appendMsg('user', msg);
+  chatHistory.push({ role: 'user', content: msg });
+  showTyping();
+
+  const systemPrompt = `Tu es Vinyl Guru, expert passionné en vinyles et musique. Tu parles français de manière chaleureuse et enthousiaste.
+
+Voici les données de l'utilisateur :
+${collSummary()}
+
+Tes missions :
+- Suggérer des vinyles similaires ou complémentaires à sa collection
+- Conseiller sur les priorités d'achat de sa wishlist
+- Répondre aux questions sur les genres, artistes, labels, pressings
+- Donner des conseils sur la conservation et la valorisation
+- Expliquer les tendances du marché vinyle
+- Identifier des raretés ou éditions spéciales intéressantes
+
+Réponds de manière concise mais informative. Utilise **gras** pour les noms d'albums/artistes importants.`;
+
+  try {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${anthropicKey}`,
+        'HTTP-Referer': 'vinyl-vault-app',
+        'X-Title': 'Vinyl Vault'
+      },
+      body: JSON.stringify({
+        model: 'openrouter/auto',
+        max_tokens: 1000,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          ...chatHistory.slice(-12)
+        ]
+      })
+    });
+
+    const data = await response.json();
+    removeTyping();
+
+    if (data.error) {
+      appendMsg('bot', `⚠ Erreur : ${data.error.message}`);
+      return;
+    }
+
+    const reply = data.choices?.[0]?.message?.content || "Désolé, je n'ai pas pu répondre.";
+    chatHistory.push({ role: 'assistant', content: reply });
+    appendMsg('bot', reply);
+    extractSuggestions(reply);
+
+  } catch(e) {
+    removeTyping();
+    appendMsg('bot', "❌ Erreur de connexion. Vérifie ta clé API et ta connexion internet.");
+    console.error(e);
+  }
+}
+
+function extractSuggestions(text) {
+  const matches = text.match(/\*\*([^*]+)\*\*/g);
+  if (!matches || matches.length < 2) return;
+  document.getElementById('sidebar-suggestions').innerHTML = matches.slice(0,4).map(m => {
+    const s = m.replace(/\*\*/g,'');
+    const [artist, ...rest] = s.split(' — ');
+    return `<div class="suggestion-card" onclick="quickAsk('Parle-moi davantage de ${s.replace(/'/g,"\\'")}')">
+      <div class="suggestion-artist">${artist}</div>
+      <div class="suggestion-title">${rest.join(' — ') || artist}</div>
+      <div class="suggestion-reason">Cliquer pour en savoir plus →</div>
+    </div>`;
+  }).join('');
+}
+
+function quickAsk(msg) {
+  document.getElementById('chat-input').value = msg;
+  sendChat();
+}
+
+// ── SUGGESTIONS ───────────────────────────────────────────────
+let suggestionsCache    = JSON.parse(localStorage.getItem('vv_suggestions') || 'null');
+let suggestionsGenerating = false;
+
+function initSuggestionsPage() {
+  if (!anthropicKey) {
+    document.getElementById('suggestions-content').innerHTML = `
+      <div class="sugg-empty">
+        🤖 Configure ta clé <strong>OpenRouter</strong> dans l'onglet <strong>Conseiller IA</strong> pour activer les suggestions personnalisées.
+      </div>`;
+    return;
+  }
+  if (collection.length === 0) {
+    document.getElementById('suggestions-content').innerHTML = `
+      <div class="sugg-empty">
+        🎵 Ajoute des vinyles à ta <strong>collection</strong> pour recevoir des suggestions personnalisées !
+      </div>`;
+    return;
+  }
+  if (suggestionsCache) {
+    renderSuggestions(suggestionsCache);
+  } else {
+    generateSuggestions(false);
+  }
+}
+
+async function generateSuggestions(force = false) {
+  if (suggestionsGenerating) return;
+  if (!anthropicKey || collection.length === 0) return;
+
+  suggestionsGenerating = true;
+  const btn = document.getElementById('sugg-refresh-btn');
+  if (btn) { btn.disabled = true; btn.textContent = '⏳ Génération…'; }
+
+  document.getElementById('suggestions-content').innerHTML = `
+    <div class="sugg-loading">
+      <span class="loading-spinner"></span>
+      <div style="margin-top:1rem;font-size:0.85rem">Analyse de ta collection en cours…<br>
+      <span style="font-size:0.75rem;color:var(--text-dim)">L'IA prépare tes suggestions personnalisées</span></div>
+    </div>`;
+
+  const collectionDesc = collection
+    .map(v => `${v.artist} — ${v.title} (${v.year||'?'}, ${v.genre||'?'})`)
+    .join('\n');
+  const wishlistDesc = wishlist.length
+    ? '\n\nListe de souhaits:\n' + wishlist.map(w => `${w.artist} — ${w.title}`).join('\n')
+    : '';
+
+  const prompt = `Tu es un expert en musique et vinyles. Analyse cette collection et génère exactement 12 suggestions de vinyles répartis en 3 catégories de 4 suggestions chacune.
+
+COLLECTION DE L'UTILISATEUR:
+${collectionDesc}${wishlistDesc}
+
+Génère un JSON valide (UNIQUEMENT le JSON, aucun texte avant ou après) avec cette structure exacte:
+{
+  "similar": [
+    {"artist": "Nom Artiste", "album": "Titre Album", "year": "1975", "genre": "Rock", "reason": "Explication courte pourquoi ce disque correspond à sa collection (max 15 mots)"},
+    ... (4 entrées)
+  ],
+  "unknown": [
+    {"artist": "Nom Artiste", "album": "Titre Album", "year": "1982", "genre": "Jazz", "reason": "Explication courte (max 15 mots)"},
+    ... (4 entrées)
+  ],
+  "rare": [
+    {"artist": "Nom Artiste", "album": "Titre Album", "year": "1968", "genre": "Rock", "reason": "Explication courte sur la rareté ou valeur (max 15 mots)"},
+    ... (4 entrées)
+  ]
+}
+
+Règles importantes:
+- "similar": vinyles du même style/genre que sa collection, qu'il n'a PAS encore
+- "unknown": artistes/albums qu'il ne connaît probablement pas mais qui correspondent à ses goûts
+- "rare": pressings originaux rares, éditions limitées, vinyles très recherchés des genres qu'il aime
+- Ne propose JAMAIS un vinyle déjà dans sa collection ou sa wishlist
+- Soit précis sur les titres et artistes (vrais albums existants)
+- Varie les suggestions, pas toujours les mêmes artistes`;
+
+  try {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${anthropicKey}`,
+        'HTTP-Referer': 'vinyl-vault-app',
+        'X-Title': 'Vinyl Vault'
+      },
+      body: JSON.stringify({
+        model: 'openrouter/auto',
+        max_tokens: 2000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+
+    const data = await response.json();
+    if (data.error) throw new Error(data.error.message);
+
+    const raw = data.choices?.[0]?.message?.content || '';
+    // Extract JSON robustly
+    const jsonMatch = raw.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('Pas de JSON dans la réponse');
+
+    const parsed = JSON.parse(jsonMatch[0]);
+    if (!parsed.similar || !parsed.unknown || !parsed.rare) throw new Error('Structure JSON invalide');
+
+    // Enrich with Discogs data
+    const enriched = await enrichWithDiscogs(parsed);
+
+    suggestionsCache = { ...enriched, generatedAt: new Date().toISOString() };
+    localStorage.setItem('vv_suggestions', JSON.stringify(suggestionsCache));
+    renderSuggestions(suggestionsCache);
+
+  } catch(e) {
+    console.error('Suggestions error:', e);
+    document.getElementById('suggestions-content').innerHTML = `
+      <div class="sugg-empty">
+        ❌ Erreur lors de la génération : ${e.message}<br>
+        <button class="btn btn-primary" onclick="generateSuggestions(true)" style="margin-top:1rem">Réessayer</button>
+      </div>`;
+  }
+
+  suggestionsGenerating = false;
+  if (btn) { btn.disabled = false; btn.textContent = '✨ Régénérer'; }
+}
+
+async function enrichWithDiscogs(suggestions) {
+  if (!discogsToken) return suggestions;
+
+  const enrich = async (item) => {
+    try {
+      const q = `${item.artist} ${item.album}`;
+      const data = await dFetch(`/database/search?q=${encodeURIComponent(q)}&type=release&per_page=3`);
+      if (!data?.results?.length) return item;
+      const r = data.results[0];
+      return {
+        ...item,
+        cover: r.cover_image || r.thumb || null,
+        discogsId: r.id,
+        discogsThumb: r.thumb || null
+      };
+    } catch { return item; }
+  };
+
+  // Enrich in parallel but rate-limited
+  const enrichBatch = async (arr) => {
+    const results = [];
+    for (const item of arr) {
+      results.push(await enrich(item));
+      await new Promise(r => setTimeout(r, 300));
+    }
+    return results;
+  };
+
+  const [similar, unknown, rare] = await Promise.all([
+    enrichBatch(suggestions.similar),
+    enrichBatch(suggestions.unknown),
+    enrichBatch(suggestions.rare)
+  ]);
+
+  return { similar, unknown, rare };
+}
+
+function renderSuggestions(data) {
+  const total = (data.similar?.length||0) + (data.unknown?.length||0) + (data.rare?.length||0);
+  document.getElementById('sugg-count').textContent = total;
+
+  const dt = data.generatedAt ? new Date(data.generatedAt) : null;
+  if (dt) {
+    document.getElementById('sugg-last-update').textContent =
+      `Générées le ${dt.toLocaleDateString('fr-FR')} à ${dt.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}`;
+  }
+
+  const sections = [
+    { key: 'similar', icon: '🎵', title: 'DANS TON STYLE',     tag: 'similar', tagLabel: 'Style similaire', desc: 'Basé sur ta collection' },
+    { key: 'unknown', icon: '🔭', title: 'À DÉCOUVRIR',        tag: 'unknown', tagLabel: 'À découvrir',     desc: 'Artistes que tu ne connais pas encore' },
+    { key: 'rare',    icon: '💎', title: 'RARETÉS & PRESSINGS', tag: 'rare',   tagLabel: 'Rare',             desc: 'Éditions recherchées & collectibles' }
+  ];
+
+  document.getElementById('suggestions-content').innerHTML = sections.map(s => `
+    <div class="sugg-section">
+      <div class="sugg-section-header">
+        <div class="sugg-section-icon">${s.icon}</div>
+        <div class="sugg-section-title">${s.title}</div>
+        <div class="sugg-section-desc">${s.desc}</div>
+      </div>
+      <div class="sugg-grid">
+        ${(data[s.key]||[]).map((item, i) => buildSuggCard(item, s.tag, s.tagLabel, i)).join('')}
+      </div>
+    </div>`).join('');
+}
+
+function buildSuggCard(item, tag, tagLabel, i) {
+  const coverHtml = item.cover
+    ? `<img src="${item.cover}" alt="" onerror="this.parentNode.innerHTML=recSVG()">`
+    : recSVG();
+
+  return `<div class="sugg-card" style="animation-delay:${i*0.06}s">
+    <div class="sugg-cover">
+      ${coverHtml}
+      <div class="sugg-tag ${tag}">${tagLabel}</div>
+    </div>
+    <div class="sugg-info">
+      <div class="sugg-artist">${item.artist}</div>
+      <div class="sugg-title">${item.album}</div>
+      <div class="sugg-reason">${item.reason}</div>
+      <div class="sugg-footer">
+        <span class="sugg-price">${item.year||''} ${item.genre ? '· '+item.genre : ''}</span>
+        <div class="sugg-actions">
+          ${item.discogsId
+            ? `<button class="btn" style="font-size:0.62rem;padding:0.3rem 0.55rem" onclick="searchAndImport('${escStr(item.artist)}','${escStr(item.album)}','wishlist')" title="Ajouter aux souhaits">♥</button>
+               <button class="btn btn-primary" style="font-size:0.62rem;padding:0.3rem 0.55rem" onclick="searchAndImport('${escStr(item.artist)}','${escStr(item.album)}','collection')" title="Ajouter à la collection">+</button>`
+            : `<button class="btn" style="font-size:0.62rem;padding:0.3rem 0.55rem" onclick="searchSuggOnDiscogs('${escStr(item.artist)}','${escStr(item.album)}')" title="Rechercher sur Discogs">🔍 Discogs</button>`
+          }
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function escStr(s) { return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
+
+async function searchAndImport(artist, album, target) {
+  toast('Recherche sur Discogs…');
+  const data = await dFetch(`/database/search?q=${encodeURIComponent(artist+' '+album)}&type=release&per_page=3`);
+  if (!data?.results?.length) {
+    toast('Introuvable sur Discogs — ouverture du formulaire'); 
+    // Pre-fill manually
+    if (target === 'wishlist') {
+      sv('w-artist', artist); sv('w-title', album);
+      openWishModal();
+    } else {
+      sv('f-artist', artist); sv('f-title', album);
+      openAddModal();
+    }
+    return;
+  }
+  await prefill(data.results[0].id, target === 'wishlist' ? 'wish' : 'add');
+  if (target === 'wishlist') openWishModal(); else openAddModal();
+  toast('✓ Données importées — vérifie et confirme');
+}
+
+function searchSuggOnDiscogs(artist, album) {
+  // Navigate to search page with pre-filled query
+  document.querySelectorAll('.nav-tab').forEach(e=>e.classList.remove('active'));
+  document.querySelectorAll('.nav-tab')[2].classList.add('active');
+  document.querySelectorAll('.page').forEach(e=>e.classList.remove('active'));
+  document.getElementById('page-search').classList.add('active');
+  sv('discogs-search-input', artist + ' ' + album);
+  discogsSearch();
+}
+
+// ── EXPORT / IMPORT ───────────────────────────────────────────
+function exportData() {
+  const data = {
+    version: 1,
+    exportedAt: new Date().toISOString(),
+    collection,
+    wishlist
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  const date = new Date().toISOString().slice(0,10);
+  a.href     = url;
+  a.download = `vinyl-vault-${date}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast(`✓ Collection exportée (${collection.length} vinyles, ${wishlist.length} souhaits)`);
+}
+
+function importData(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      // Supporte l'ancien format (juste un tableau) et le nouveau format avec version
+      const newCollection = Array.isArray(data) ? data : (data.collection || []);
+      const newWishlist   = Array.isArray(data) ? [] : (data.wishlist || []);
+
+      if (!Array.isArray(newCollection)) throw new Error('Format invalide');
+
+      const existing = collection.length + wishlist.length;
+      if (existing > 0) {
+        const choice = confirm(
+          `Tu as déjà ${collection.length} vinyle(s) et ${wishlist.length} souhait(s).\n\n` +
+          `OK = Fusionner (ajoute sans écraser)\n` +
+          `Annuler = Remplacer complètement`
+        );
+        if (choice) {
+          // Fusion : on n'ajoute que les IDs qui n'existent pas déjà
+          const existingIds = new Set(collection.map(v => v.id));
+          const newItems = newCollection.filter(v => !existingIds.has(v.id));
+          collection.push(...newItems);
+
+          const existingWishIds = new Set(wishlist.map(w => w.id));
+          const newWishItems = newWishlist.filter(w => !existingWishIds.has(w.id));
+          wishlist.push(...newWishItems);
+
+          toast(`✓ Fusionné : +${newItems.length} vinyle(s), +${newWishItems.length} souhait(s)`);
+        } else {
+          collection = newCollection;
+          wishlist   = newWishlist;
+          toast(`✓ Remplacé : ${collection.length} vinyle(s), ${wishlist.length} souhait(s) importés`);
+        }
+      } else {
+        collection = newCollection;
+        wishlist   = newWishlist;
+        toast(`✓ ${collection.length} vinyle(s) et ${wishlist.length} souhait(s) importés`);
+      }
+
+      saveCollection();
+      saveWishlist();
+    } catch(err) {
+      toast('❌ Fichier invalide — vérifie que c\'est bien un export Vinyl Vault');
+      console.error(err);
+    }
+    // Reset l'input pour pouvoir réimporter le même fichier
+    event.target.value = '';
+  };
+  reader.readAsText(file);
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+updateStats();
+renderCollection();
+if (discogsToken) {
+  sv('discogs-token','••••••••');
+  document.getElementById('token-banner').style.opacity='0.5';
+}
+if (anthropicKey) {
+  document.getElementById('anthropic-key').value='••••••••••••••••';
+  document.getElementById('api-banner').innerHTML=`
+    <div style="display:flex;align-items:center;gap:0.75rem;width:100%">
+      <span style="color:#4caf50;font-size:1.2rem">✓</span>
+      <div><strong style="color:#4caf50">OpenRouter configuré</strong> — <span style="color:var(--text-muted)">Le chatbot est actif (modèle gratuit auto)</span></div>
+      <button class="btn btn-danger" onclick="clearApiKey()" style="margin-left:auto;font-size:0.65rem">Supprimer la clé</button>
+    </div>`;
+}
+// Auto-generate suggestions on load (if API key + collection present, and no recent cache)
+if (anthropicKey && collection.length > 0) {
+  const cacheAge = suggestionsCache?.generatedAt
+    ? (Date.now() - new Date(suggestionsCache.generatedAt).getTime()) / 1000 / 60 / 60
+    : Infinity;
+  // Regenerate if cache is older than 24h
+  if (cacheAge > 24) {
+    setTimeout(() => generateSuggestions(false), 1500);
+  }
+}
+</script>
+</body>
+</html>
