@@ -1281,33 +1281,32 @@ async function enrichWithDiscogs(suggestions) {
   const enrich = async (item) => {
     try {
       const q = `${item.artist} ${item.album}`;
-      const data = await dFetch(`/database/search?q=${encodeURIComponent(q)}&type=release&per_page=3`);
+      const data = await dFetch(`https://api.discogs.com/database/search?q=${encodeURIComponent(q)}&type=release&per_page=5`);
       if (!data?.results?.length) return item;
-      const r = data.results[0];
+      // Pick best result — prefer one with a cover image
+      const withCover = data.results.find(r => r.cover_image && !r.cover_image.includes('spacer'));
+      const r = withCover || data.results[0];
       return {
         ...item,
-        cover: r.cover_image || r.thumb || null,
+        cover: (r.cover_image && !r.cover_image.includes('spacer')) ? r.cover_image : (r.thumb || null),
         discogsId: r.id,
-        discogsThumb: r.thumb || null
       };
     } catch { return item; }
   };
 
-  // Enrich in parallel but rate-limited
   const enrichBatch = async (arr) => {
     const results = [];
     for (const item of arr) {
       results.push(await enrich(item));
-      await new Promise(r => setTimeout(r, 300));
+      await new Promise(r => setTimeout(r, 350)); // respecte le rate limit Discogs
     }
     return results;
   };
 
-  const [similar, unknown, rare] = await Promise.all([
-    enrichBatch(suggestions.similar),
-    enrichBatch(suggestions.unknown),
-    enrichBatch(suggestions.rare)
-  ]);
+  // Enrich all 3 categories sequentially to avoid hitting rate limits
+  const similar = await enrichBatch(suggestions.similar);
+  const unknown = await enrichBatch(suggestions.unknown);
+  const rare    = await enrichBatch(suggestions.rare);
 
   return { similar, unknown, rare };
 }
@@ -1373,7 +1372,7 @@ function escStr(s) { return (s||'').replace(/'/g,"\\'").replace(/"/g,'&quot;'); 
 
 async function searchAndImport(artist, album, target) {
   toast('Recherche sur Discogs…');
-  const data = await dFetch(`/database/search?q=${encodeURIComponent(artist+' '+album)}&type=release&per_page=3`);
+  const data = await dFetch(`https://api.discogs.com/database/search?q=${encodeURIComponent(artist+' '+album)}&type=release&per_page=3`);
   if (!data?.results?.length) {
     toast('Introuvable sur Discogs — ouverture du formulaire'); 
     // Pre-fill manually
